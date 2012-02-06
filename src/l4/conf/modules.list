@@ -1,0 +1,54 @@
+# vim:set ft=l4mods:
+# Module configuration file for single image mode
+#
+# kernel, sigma0 and moe are always loaded automatically
+#
+# add kernel command line arguments with
+#  kernel fiasco arguments...
+# the seconds argument here is the binary name
+# 
+# add sigma command line arguments with
+#  sigma0 sigma0 arguments...
+# the second sigma0 is the binary name
+#
+# add roottask command line arguments with
+#  roottask moe arguments...
+# the second roottask is the binary name
+#
+# modaddr: address where modules start, relative to begin of RAM
+#   this statement is either global (before first entry statement)
+#   or per entry
+
+modaddr 0x01100000
+
+entry hello_hendrik
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe rom/hello_server.cfg
+module l4re
+module ned
+module hello_server.cfg
+module server
+module client
+
+entry hello
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe --init=rom/hello
+module l4re
+module hello
+
+entry hello-cfg
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe rom/hello.cfg
+module l4re
+module ned
+module hello.cfg
+module hello
+
+entry clntsrv
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe rom/clntsrv.cfg
+module l4re
+module ned
+module clntsrv.cfg
+module ex_clntsrv-server
+module ex_clntsrv-client

@@ -1,0 +1,3 @@
+[submodule ""]
+  path = src/l4/pkg/hello_server/
+  url = s8880935@ganymed.inf.tu-dresden.de:repo/oslab/hello_server.git 
