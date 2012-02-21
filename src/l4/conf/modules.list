@@ -30,6 +30,14 @@ module hello_server.cfg
 module server
 module client
 
+entry malloc_test
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe rom/malloc_test.cfg
+module l4re
+module ned
+module malloc_test.cfg
+
+
 entry hello
 kernel fiasco -serial_esc -jdb_cmd=JS
 roottask moe --init=rom/hello

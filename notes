@@ -1,1 +1,15 @@
 src/l4/pkg/libc_backends/lib/l4re_mem/mem.cc
+
+tipps von phipse
+
+http://www.ibm.com/developerworks/linux/library/l-memory/
+http://g.oswego.edu/dl/html/malloc.html
+http://bradrodriguez.com/papers/ms/pat4th-c.html
+http://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+http://wiki.osdev.org/PS2_Keyboard#Receiving_Input
+http://www.quadibloc.com/comp/scan.htm
+http://en.wikibooks.org/wiki/QEMU/Monitor#info
+http://en.wikipedia.org/wiki/VESA_BIOS_Extensions
+http://www.cplusplus.com/doc/tutorial/pointers/
+
+http://dl.dropbox.com/u/1407589/timedemo.html
