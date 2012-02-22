@@ -27,16 +27,19 @@ Space* malloc_first_space;
 Space* malloc_current_space;
 L4::Cap<L4Re::Dataspace> malloc_ds_cap;
 
+bool do_print = true;
 
 // get a dataspace from sigma0
 // mem_alloc() ceilings to one page AKA 4096B
 int allocate_dataspace(size_t &addr, size_t space_size=1)
 {
-  printf("malloc: allocate_dataspace(%i, %i)\n",addr, space_size);
+  if(do_print)
+    printf(" malloc: allocate_dataspace(%i, %i)\n",addr, space_size);
   // already got dataspace cap
 
   space_size = Space::align_size(space_size);
-  printf("malloc: allocate_dataspace(%i, %i) aligned\n",addr, space_size);
+  if(do_print)
+    printf(" malloc: allocate_dataspace(%i, %i) aligned\n",addr, space_size);
 
 
   // one page is 4kB
@@ -51,7 +54,8 @@ int allocate_dataspace(size_t &addr, size_t space_size=1)
         L4Re::Rm::Search_addr, malloc_ds_cap, 0);
   if (err) return 0;
 
-  printf("malloc: allocate_dataspace -> addr= %i \n",addr);
+  if(do_print)
+    printf(" malloc: allocate_dataspace -> addr= %i \n",addr);
   return 0;
 }
 
@@ -60,21 +64,21 @@ Space* create_space(size_t size = 1)
   size_t addr = 0;
   allocate_dataspace(addr);
 
+  size = Space::align_size(size);
+
   Space* created_space = (Space*) addr;
   created_space->init(size);
 
-  printf("malloc: create_space() -> new Space %p at %i\n", created_space, addr);
+  if(do_print)
+    printf(" malloc: create_space() -> new Space(%i) %i at %i\n", size, (size_t) created_space, addr);
 
   // alternative placement syntax XXX
   // Space *space = new (addr) (void*)Space(size);
   // created_space = &space;
 
   Chunk* first_chunk = created_space->first();
-  first_chunk->prev = NULL;
-  first_chunk->next = NULL;
-  first_chunk->size = 0;
-
-  printf("malloc: create_space() -> first Chunk begins at %p \n",first_chunk);
+  if(do_print)
+    printf(" malloc: create_space() -> first Chunk begins at %i \n",(size_t)first_chunk);
 
   return created_space;
 }
@@ -92,55 +96,64 @@ Space* append_space(size_t size = 1)
 
 bool malloc_init()
 {
-  printf("malloc: malloc_init() \n");
+  if(do_print)
+    printf(" malloc: malloc_init() \n");
 
   // get Dataspace Capability
   malloc_ds_cap = L4Re::Util::cap_alloc.alloc<L4Re::Dataspace>();
   if(!malloc_ds_cap.is_valid())
   {
-    printf("malloc: malloc_init() -> malloc_ds_cap is invalid\n");
+    if(do_print)
+      printf(" malloc: malloc_init() -> malloc_ds_cap is invalid\n");
     return 0;
   }
-  printf("malloc: malloc_init() -> malloc_ds_cap is valid\n");
+  if(do_print)
+    printf(" malloc: malloc_init() -> malloc_ds_cap is valid\n");
 
   // init the first dataspace
-  size_t addr = 0;
-  malloc_current_space = create_space(addr);
+  malloc_current_space = create_space(1);
   malloc_first_space = malloc_current_space;
-  printf("malloc: malloc_init() -> malloc_current_space= %p \n", malloc_current_space);
-  printf("malloc: malloc_init() -> malloc_first_space= %p \n", malloc_first_space);
+
+  if(do_print){
+    printf(" malloc: malloc_init() -> malloc_current_space= %i \n", (size_t) malloc_current_space);
+    printf(" malloc: malloc_init() -> malloc_first_space= %i \n", (size_t) malloc_first_space);
+    printf(" malloc: malloc_init() -> capacity= %i \n",  malloc_first_space->capacity());
+  }
 
   malloc_initialized = true;
+  if(do_print)
+    printf("^-------------------------init done-------------------------^\n\n");
   return malloc_initialized;
 }
 
-void print()
+extern "C" void malloc_overview()
 {
+  printf("v----------------------malloc overview----------------------v\n");
+  printf(" Space-header: %i | Space-End: %i | Chunk-header: %i | Last-Chunk-End: %i \n", sizeof(Space), malloc_current_space->get_end(), sizeof(Chunk), malloc_current_space->get_last()->get_end());
+  malloc_first_space->print();
   malloc_first_space->print_chunks();
+
+  printf("^----------------------malloc overview----------------------^\n");
 }
 
-size_t align_size(size_t size) 
-{
-  if (size < sizeof(l4_umword_t))
-    return sizeof(l4_umword_t);
-  else
-    return size + size % sizeof(l4_umword_t);
-}
 
 extern "C" void *malloc(size_t size) throw()
 {
-  printf("malloc: malloc(%i) ->  \n", size);
   // initialize if not yet initialized ;)
   if(!malloc_initialized)
     if(!malloc_init())
       return 0;
 
+  if(do_print){
+    printf("\nv-------------------------malloc(%i)------------------------v\n", size);
+  }
 
-  printf("malloc: malloc() -> unaligned size= %i\n", size);
-  size = align_size(size);
-  printf("malloc: malloc() ->   aligned size= %i\n", size);
+  if(do_print)
+    printf(" malloc: malloc() -> unaligned size= %i\n", size);
+  size = Chunk::align_size(size);
+  if(do_print)
+    printf(" malloc: malloc() ->   aligned size= %i\n", size);
 
-  printf("L4_PAGESIZE (%lu) !=  sizeof(l4_umword_t)(%u) ?\n", L4_PAGESIZE, sizeof(l4_umword_t));
 
   Chunk *used_chunk = NULL; 
 
@@ -151,7 +164,8 @@ extern "C" void *malloc(size_t size) throw()
 
   // 2.) append a new chunk to malloc_current_space
   if(used_chunk == NULL){
-    printf("malloc: malloc() -> appending chunk space");
+    if(do_print)
+      printf(" malloc: malloc() -> appending chunk space\n");
     used_chunk = malloc_current_space->append_chunk(size);
   }
 
@@ -159,19 +173,28 @@ extern "C" void *malloc(size_t size) throw()
   // 4.) allocate new dataspace ( should return first chunk )
 
   if(used_chunk == NULL){ 
-    printf("malloc: malloc() -> allocating new space");
+    if(do_print)
+      printf(" malloc: malloc() -> allocating new space\n");
     append_space();
     used_chunk = malloc_current_space->append_chunk(size);
   }
 
   // there's nothing left to gain
   if(used_chunk == NULL){
-    printf("malloc: malloc() -> could not broker any chunks");
+    if(do_print)
+      printf(" malloc: malloc() -> could not broker any chunks\n");
     return NULL;
   }
 
   // at this point we definitely have a Chunk we can use
   used_chunk->free = false;
+
+  if(do_print)
+    printf("^-----------------------malloc done-------------------------^\n\n");
+
+
+  malloc_overview();
+  printf("\n\n\n");
   return used_chunk->addr();
 }
 
