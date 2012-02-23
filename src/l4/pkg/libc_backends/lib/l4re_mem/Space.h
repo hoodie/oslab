@@ -69,7 +69,6 @@ struct Space {
     return NULL;
   }
 
-  // TODO appends new chunk to dataspace and returns reference
   Chunk *append_chunk(size_t size)
   {
     // printf(" malloc:Space::append_chunk() -> size= %i\n", size);
@@ -126,7 +125,7 @@ struct Space {
 
   void print()
   {
-    printf("[S {%i} | ", (size_t)this);
+    printf(" [ S {%i} | ", (size_t)this);
     printf("size:%u | ", size);
     printf("next:%i | ", (size_t)next);
     printf("prev:%i | ", (size_t)prev);
