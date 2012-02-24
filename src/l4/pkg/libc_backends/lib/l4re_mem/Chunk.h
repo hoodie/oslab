@@ -145,8 +145,11 @@ struct Chunk {
     printf( "prev:%i | ", p);
     printf( "next:%i | ", n);
     printf( "addr:%i | ", a );
-    printf( "free: %i ] ", (int) this->free );
-    printf("\n");
+    if(this->free)
+      printf( "\e[1;34mfree \e[0;32m" );
+    else
+      printf( "\e[1;31mused \e[0;32m" );
+    printf("] \n");
   }
 
   //  Chunk* next()

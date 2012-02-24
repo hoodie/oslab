@@ -60,11 +60,16 @@ struct Space {
   {
     // printf(" malloc:Space::find_chunk() -> size= %i\n", size);
     Chunk* current = this->first();
-    while (current->next != NULL)
+    bool next = true;
+
+    while (next)
     {
       if ( current->free && current->size == size)
         return current;
-      current = current->next;
+      if(current->next != NULL)
+        current = current->next;
+      else
+        next = false;
     }
     return NULL;
   }
