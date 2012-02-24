@@ -8,7 +8,7 @@ class Hello_server : public L4::Server_object {
 // new and more concise implementation
 int Hello_server::dispatch(l4_umword_t, L4::Ipc::Iostream &ios) {
   unsigned long size;
-  char *buf;
+  char *buf = NULL;
 
   ios >> size >> L4::Ipc::Buf_in<char>(buf,size);
 

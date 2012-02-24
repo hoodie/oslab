@@ -25,14 +25,14 @@
 // TODO 1. splitting free chunks
 // TODO 2. merging free  chunks
 
-void * operator new (size_t, void *) throw();
+// void * operator new (size_t, void *) throw();
 
 bool malloc_initialized;
 Space* malloc_first_space;
 Space* malloc_current_space;
 L4::Cap<L4Re::Dataspace> malloc_ds_cap;
 
-bool do_print = false;
+bool do_print = true;
 
 // get a dataspace from sigma0
 // mem_alloc() ceilings to one page AKA 4096B

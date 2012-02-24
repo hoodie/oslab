@@ -32,10 +32,9 @@ module client
 
 entry malloc_test
 kernel fiasco -serial_esc -jdb_cmd=JS
-roottask moe rom/malloc_test.cfg
+roottask moe --init=rom/malloc_test
 module l4re
-module ned
-module malloc_test.cfg
+module malloc_test
 
 
 entry hello
