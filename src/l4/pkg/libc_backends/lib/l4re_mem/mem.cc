@@ -96,7 +96,10 @@ Space* append_space(size_t size = 1)
 
 bool malloc_init()
 {
-  if(do_print) printf(" malloc: malloc_init() \n");
+  if(do_print){
+    printf("\e[0;31m");
+    printf("\nv-----------------------malloc-init------------------------v\n");
+  }
 
   // get Dataspace Capability
   malloc_ds_cap = L4Re::Util::cap_alloc.alloc<L4Re::Dataspace>();
@@ -118,12 +121,16 @@ bool malloc_init()
   }
 
   malloc_initialized = true;
-  if(do_print) printf("^-------------------------init done-------------------------^\n\n");
+  if(do_print){
+    printf("^-------------------------init done-------------------------^\n\n");
+    printf("\033[0m");
+  }
   return malloc_initialized;
 }
 
 extern "C" void malloc_overview()
 {
+  printf("\e[0;32m");
   printf("v----------------------malloc overview----------------------v\n");
   Space* s = malloc_first_space;
   bool next = true;
@@ -144,6 +151,7 @@ extern "C" void malloc_overview()
   }
 
   printf("^----------------------malloc overview----------------------^\n");
+  printf("\033[0m");
 }
 
 
@@ -154,7 +162,11 @@ extern "C" void *malloc(size_t size) throw()
     if(!malloc_init())
       return 0;
 
-  if(do_print) printf("\nv-------------------------malloc(%i)------------------------v\n", size);
+  
+  if(do_print){
+    printf("\e[0;34m");
+    printf("\nv-------------------------malloc(%i)------------------------v\n", size);
+  }
 
   bool overview = false;
   if(size == 9) overview = true;
@@ -220,6 +232,7 @@ extern "C" void *malloc(size_t size) throw()
     malloc_overview();
     printf("\n\n\n");
   }
+  printf("\033[0m");
   return used_chunk->addr();
 }
 
@@ -229,6 +242,7 @@ extern "C" void free(void *p) throw()
 {
   Chunk* c = Chunk::from_addr(p);
   c->free = true;
-  enter_kdebug("free");
-  p = p;
+  if(do_print) printf("free(%i) -- ", (size_t)p);
+  if(do_print) printf("freeing chunk %i (addr: %i)\n\n", (size_t) c, (size_t) c->addr());
+  //enter_kdebug("free");
 }

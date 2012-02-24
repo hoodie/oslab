@@ -28,7 +28,7 @@ struct Chunk {
 
   static Chunk *from_addr(void*p)
   {
-    return *(Chunk*)p - sizeof(size_t);
+    return *(Chunk*)p - sizeof(Chunk);
   }
 
   Chunk *operator + (size_t size)
@@ -140,11 +140,12 @@ struct Chunk {
 
     if(n > reference) n -= reference;
     if(p > reference) p -= reference;
-    printf(" [ C {%i} | ", (size_t) this - reference);
+    printf(" [ C {%i} | ", (size_t) this);
     printf( "size:%i | ", size );
     printf( "prev:%i | ", p);
     printf( "next:%i | ", n);
     printf( "addr:%i | ", a );
+    printf( "free: %i ] ", (int) this->free );
     printf("\n");
   }
 
