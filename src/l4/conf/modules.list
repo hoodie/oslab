@@ -21,6 +21,12 @@
 
 modaddr 0x01100000
 
+entry malloc_test
+kernel fiasco -serial_esc -jdb_cmd=JS
+roottask moe --init=rom/malloc_test
+module l4re
+module malloc_test
+
 entry hello_hendrik
 kernel fiasco -serial_esc -jdb_cmd=JS
 roottask moe rom/hello_server.cfg
@@ -29,12 +35,6 @@ module ned
 module hello_server.cfg
 module server
 module client
-
-entry malloc_test
-kernel fiasco -serial_esc -jdb_cmd=JS
-roottask moe --init=rom/malloc_test
-module l4re
-module malloc_test
 
 
 entry hello

@@ -18,6 +18,7 @@ struct Space {
     return this;
   }
 
+
   Chunk* get_last()
   {
     Chunk* c = this->first();
@@ -27,15 +28,33 @@ struct Space {
     return c;
   }
 
+
   Chunk *first()
   {
     return (Chunk*)((size_t)this + sizeof(Space)); 
   }
 
+
   size_t get_end()
   {
     return (size_t)this + sizeof(Space)  + this->size - 1;
   }
+
+
+  // static Space *from_chunk(Chunk* c)
+  // {
+  //   bool pprev = true;
+  //   while(pprev)
+  //   {
+  //     if(c->prev != NULL)
+  //       c = c->prev;
+  //     else
+  //       pprev = false;
+  //   }
+  //   return (Space*) (c - sizeof(Space));
+
+  // }
+
 
   size_t capacity()
   {
@@ -47,32 +66,82 @@ struct Space {
     return (end - last_end); 
   }
 
+
+  bool can_append(size_t size)
+  {
+    if( this->get_last()->size == 0 )
+      return this->capacity() >= size;
+    else
+      return this->capacity() >= (size + sizeof(Chunk));
+  }
+
   bool can_hold(size_t needed_size)
   {
-    size_t tail = capacity();
-    size_t needed = needed_size + sizeof(Chunk);
-    return tail > needed;
-    // this->get_last()->get_after();
+    return this->size >= needed_size;
   }
+
+
+  // searches current Space for reusable Chunk and returns reference
+  void merge_free_chunks()
+  {
+    printf(" malloc:Space::merge_free_chunks() in space %i\n",this);
+    Chunk* c = this->get_last();
+    bool prev = true;
+
+    while (prev)
+    {
+      if(c->prev!= NULL){
+        c = c->prev;
+        c->merge_right();
+      }
+      else
+        prev = false;
+    }
+  }
+
 
   // searches current Space for reusable Chunk and returns reference
   Chunk *find_chunk(size_t size)
   {
     // printf(" malloc:Space::find_chunk() -> size= %i\n", size);
-    Chunk* current = this->first();
+    Chunk* c = this->first();
     bool next = true;
 
     while (next)
     {
-      if ( current->free && current->size == size)
-        return current;
-      if(current->next != NULL)
-        current = current->next;
+      if ( c->free && c->size == size)
+        return c;
+      if(c->next != NULL)
+        c = c->next;
       else
         next = false;
     }
     return NULL;
   }
+
+
+  // searches current Space for bigger Chunks and returns a matching slice
+  Chunk *find_chunk_cut(size_t size)
+  {
+    // printf(" malloc:Space::find_chunk() -> size= %i\n", size);
+    Chunk* c = this->first();
+    bool next = true;
+
+    while (next)
+    {
+      if ( c->can_be_split(size)){
+        c->split_chunk(size);
+        return c;
+      }
+
+      if(c->next != NULL)
+        c = c->next;
+      else
+        next = false;
+    }
+    return NULL;
+  }
+
 
   Chunk *append_chunk(size_t size)
   {
@@ -99,6 +168,7 @@ struct Space {
     return appended;
   }
 
+
   static size_t align_size(size_t size) 
   {
     if (size % L4_PAGESIZE == 0)
@@ -112,6 +182,7 @@ struct Space {
       return (ceil(r)+1)*L4_PAGESIZE;
     }
   }
+
 
   Chunk* print_chunks()
   {
@@ -128,13 +199,18 @@ struct Space {
     return c;
   }
 
+
   void print()
   {
-    printf(" [ S {%i} | ", (size_t)this);
-    printf("size:%u | ", size);
-    printf("next:%i | ", (size_t)next);
-    printf("prev:%i | ", (size_t)prev);
-    printf("capacity:%i ]\n", (size_t)this->capacity());
+    printf("\e[1;32mSpace\e[0;32m :\n [[");
+    printf("capacity:\e[1;32m%i\e[0;32m | ", (size_t)this->capacity());
+    printf("size:\e[1;32m%u\e[0;32m | ", size);
+    printf("ADDR:\e[1;32m%i\e[0;32m | ", (size_t)this);
+    printf("END:\e[1;32m%i\e[0;32m | ", this->get_end());
+    printf("last-chunk-end:\e[1;32m%i\e[0;32m | ", this->get_last()->get_end());
+    printf("next:\e[1;32m%i\e[0;32m | ", (size_t)next);
+    printf("prev:\e[1;32m%i\e[0;32m ", (size_t)prev);
+    printf("]]\n");
   }
 
 };

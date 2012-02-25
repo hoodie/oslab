@@ -9,6 +9,7 @@ struct Chunk {
     init(size);
   }
 
+
   Chunk* init(size_t size)
   {
     this->prev = NULL;
@@ -26,25 +27,30 @@ struct Chunk {
         ); 
   }
 
+
   static Chunk *from_addr(void*p)
   {
     return *(Chunk*)p - sizeof(Chunk);
   }
+
 
   Chunk *operator + (size_t size)
   {
     return (Chunk*)((size_t)this + size);
   }
 
+
   Chunk *operator - (size_t size)
   {
     return (Chunk*)((size_t)this - size);
   }
 
+
   size_t get_end()
   {
     return (size_t)this + sizeof(Chunk)  + size - 1;
   }
+
 
   size_t get_after()
   {
@@ -57,12 +63,14 @@ struct Chunk {
     size_t cut_off  = this->size - (sizeof(Chunk) + size);
     size_t new_size = this->size - cut_off;
 
-    bool long_enough     = size > cut_off;
-    bool still_aligned   = this->align_size(new_size) == new_size;
-    bool cut_off_aligned = this->align_size(cut_off) == cut_off;
+    bool long_enough     = this->size > cut_off;
 
-    return false;
+    //bool still_aligned   = this->align_size(new_size) == new_size;
+    //bool cut_off_aligned = this->align_size(cut_off) == cut_off;
+
+    return (this->free && long_enough  );
   }
+
 
   // TODO split_chunk untested
   bool split_chunk(size_t size)
@@ -89,19 +97,35 @@ struct Chunk {
     return false;
   }
 
+
   // TODO user pointer to next so you don't create to many cavities
   bool merge_right()
   {
-    if(this->next->free)
+    if(this->free && this->next != NULL && this->next->free)
     {
       Chunk* right = this->next;
+      if(right->next != NULL )
+        right->next->prev = this;
       this->next = right->next;
-      this->next->prev = this;
       this->size = align_size_down(this->size + right->size + sizeof(Chunk));
+      this->set_last();
       return true;
     }
     return false;
     
+  }
+
+  void set_free()
+  {
+    this->free = true;
+    if(this->next == NULL)
+      this->size = 0;
+  }
+
+  void set_last()
+  {
+    if(this->next == NULL)
+      this->size = 0;
   }
 
 
@@ -115,6 +139,7 @@ struct Chunk {
       return x*scale;
     }
   }
+
 
   static size_t align_size(size_t size) 
   {
@@ -132,6 +157,7 @@ struct Chunk {
     }
   }
 
+
   void print(size_t reference)
   {
     size_t p = (size_t) prev;
@@ -140,7 +166,7 @@ struct Chunk {
 
     if(n > reference) n -= reference;
     if(p > reference) p -= reference;
-    printf(" [ C {%i} | ", (size_t) this);
+    printf(" [ C {%i} | ", (size_t) this - reference);
     printf( "size:%i | ", size );
     printf( "prev:%i | ", p);
     printf( "next:%i | ", n);
@@ -152,10 +178,12 @@ struct Chunk {
     printf("] \n");
   }
 
+
   //  Chunk* next()
   //  {
   //    return (Chunk*)((size_t)this + sizeof(Chunk));
   //  }
+
 
   //  static size_t round(size_t size)
   //  {
