@@ -162,6 +162,8 @@ extern "C" void *malloc(size_t size) throw()
     if(!malloc_init())
       return 0;
 
+  printf("\e[1;35m");
+
   Chunk *used_chunk = NULL; 
   Space* s = malloc_first_space;
 
@@ -241,6 +243,8 @@ extern "C" void *malloc(size_t size) throw()
     printf("\033[0m");
     printf("\n\n\n");
   }
+
+  printf("\033[0m");
   return used_chunk->addr();
 }
 

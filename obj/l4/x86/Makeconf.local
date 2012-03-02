@@ -1,2 +1,2 @@
 MODULE_SEARCH_PATH=/home/hendrik/TUD/oslab/obj/fiasco/ia32:/home/hendrik/TUD/oslab/obj/l4linux/ux:/home/hendrik/TUD/oslab/files:/home/hendrik/TUD/oslab/files/cfg:/home/hendrik/TUD/oslab/src/l4/conf
-QEMU_OPTIONS= -nographic -no-reboot
+QEMU_OPTIONS = -nographic -no-reboot

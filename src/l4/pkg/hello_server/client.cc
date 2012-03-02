@@ -1,3 +1,4 @@
+/*{*/
 /*
  * (c) 2008-2009 Adam Lackorzynski <adam@os.inf.tu-dresden.de>,
  *               Alexander Warg <warg@os.inf.tu-dresden.de>
@@ -9,49 +10,49 @@
  *
  * Adapted by Hendrik Sollich
  */
+/*}*/
 #include <l4/sys/err.h>
 #include <l4/sys/types.h>
 #include <l4/re/env>
 #include <l4/re/util/cap_alloc>
 #include <l4/cxx/ipc_stream>
-
+#include <string.h>
 #include <stdio.h>
-
 #include "shared.h"
 
-
-
-int func_hello_call(L4::Cap<void> const &server) {
-
+int hello_call(L4::Cap<void> const &server, const char *message)
+{
   L4::Ipc::Iostream stream(l4_utcb());
-  stream << l4_umword_t(Opcode::func_hello);
-  stream << "ping_pong!" ; // 10 Characters
-  l4_msgtag_t res = stream.call(server.cap(), Protocol::Hello);
-  if (l4_ipc_error(res, l4_utcb()))
-    return 1; // failure
-  return 0; // ok
+
+  unsigned long size = strlen(message);
+  stream << l4_umword_t(Opcode::hello);
+  stream << L4::Ipc::Buf_cp_out<const char>(message, size);
+  printf("%s!!\n", message);
+
+  l4_msgtag_t res = stream.call(server.cap());
+  if (l4_ipc_error(res, l4_utcb())) {
+    return 1;
+  }
+  return 0;
 }
 
 
-int main() {
+int main()
+{
 
   // query IPC-Gate at name service > capability
-  L4::Cap<void> server = L4Re::Env::env()->get_cap<void>("channel");
+  L4::Cap<void> server = L4Re::Env::env()->get_cap<void>("hello_server");
 
   if (!server.is_valid()) {
     printf("Could not get server capability!\n");
     return 1;
   }
-
-  if (func_hello_call(server)) {
+  if (hello_call(server, "ping_pong")) {
     printf("Server does not respond correctly\n");
     return 1;
   }
   else {
     printf("Sent successfully!\n");
-  
   }
-
-
   return 0;
 }

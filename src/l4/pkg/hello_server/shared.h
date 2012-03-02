@@ -12,7 +12,8 @@
 
 namespace Opcode {
   enum Opcodes {
-    func_hello
+    hello,
+    login
   };
 };
 
