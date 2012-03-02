@@ -20,63 +20,15 @@
 
 #include "shared.h"
 #include "hello_server.h"
-static L4Re::Util::Registry_server<> server;
-
-class SessionServer : public L4::Server_object
-{
-  unsigned session_id;
-  public:
-    SessionServer() : session_id(0)
-    {
-    }
-
-    int dispatch ( l4_umword_t, L4::Ipc::Iostream &ios)
-    {
-
-      l4_msgtag_t tag;
-      ios >> tag;
-
-      switch(tag.label())
-      {
-        case L4::Factory::Protocol:
-          {
-            printf("\e[1;31mFactory Protocol\e[0;31m\n");
-            unsigned op;
-            ios >> op;
-            if (op != 42) return -L4_EINVAL;
-
-            /* creating my hello server*/
-            HelloServer *helloServer = new HelloServer(++session_id);
-            server.registry()->register_obj(helloServer);
-            ios << helloServer->obj_cap();
-
-            printf("\e[0m\n\n");
-            return L4_EOK;
-          }
-        case L4::Meta::Protocol:
-          {
-            printf("\e[1;33mMeta Protocol\n");
-            int hmr= L4Re::Util::handle_meta_request<L4::Factory>(ios);
-            printf("handle meta request = %i \e[0m\n\n", hmr);
-            return hmr;
-
-          }
-        default:
-          {
-            printf("\e[1;34mDefault\e[0m\n\n");
-            return -L4_EINVAL;
-          }
-      }
-    }
-};
-
+#include "session_server.h"
 
 int main()
 {
   // static Hello_server hserv;
-  SessionServer sserver; 
+  SessionServer *sserver = new SessionServer(); 
+  L4Re::Util::Registry_server<> server = sserver->get_server();
 
-  if (!server.registry()->register_obj(&sserver, "hello_server").is_valid())
+  if (!server.registry()->register_obj(sserver, "hello_server").is_valid())
   {
     printf("Could not register my service, readonly namespace?\n");
     return 1;
