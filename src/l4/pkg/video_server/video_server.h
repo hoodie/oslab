@@ -22,7 +22,7 @@ class VideoServer : public L4::Server_object
     VideoServer(unsigned sessid);
     void get_info();
     void *get_pixel(int x, int y);
-    //int set_pixel(int x, int y, hh);
+    int set_pixel(int x, int y); // TODO currently makes it red
     int dispatch( l4_umword_t, L4::Ipc::Iostream&  );
 };
 
