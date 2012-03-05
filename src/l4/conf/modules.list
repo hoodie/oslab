@@ -26,6 +26,10 @@ kernel fiasco -serial_esc -jdb_cmd=JS
 roottask moe rom/video_server.cfg
 module l4re
 module ned
+module x86-fb.io
+module x86-legacy.devs
+module io
+module fb-drv
 module video_server.cfg
 module server
 module client

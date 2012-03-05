@@ -16,26 +16,24 @@ bldwht='\e[1;37m'       # white
 txtund=$(tput sgr 0 1)  # Underline
 txtbld=$(tput bold)     # Bold
 txtrst='\e[0m'          # Text reset
-function warn(){ echo -e ${bldred}! ${txtrst}${txtred}$*${txtrst} ; }
-function info(){ echo -e ${bldblu}* ${txtrst}${txtblu}$*${txtrst} ; }
-function pass(){ echo -e ${bldwht}* ${txtrst}${txtwht}$*${txtrst} ; }
+function warn(){ echo -e ${bldred}! $*${txtrst} ; }
+function info(){ echo -e ${bldblu}* $*${txtrst} ; }
+function pass(){ echo -e ${bldwht}* $*${txtrst} ; }
 
 cd src/l4/pkg/libc_backends/lib/l4re_mem/
 echo '--------------------------------------------------------'
 info $PWD
 echo -e $bldpur
 ./make.sh
-echo -e $txtrst
-echo -e '--------------------------------------------------------\n\n'
+echo -e $txtrst'--------------------------------------------------------\n\n'
 cd -
 
 cd src/l4/pkg/video_server/
 echo '--------------------------------------------------------'
 info "Video Server($PWD)"
-echo -e $bldcyn
+echo -e $bldblu
 ./make.sh
-echo -e $txtrst
-echo -e '--------------------------------------------------------\n\n'
+echo -e $txtrst'--------------------------------------------------------\n\n'
 cd -
 
 cd src/l4/pkg/hello_server/
@@ -43,8 +41,7 @@ echo '--------------------------------------------------------'
 info $PWD
 echo -e $bldcyn
 ./make.sh
-echo -e $txtrst
-echo -e '--------------------------------------------------------\n\n'
+echo -e $txtrst'--------------------------------------------------------\n\n'
 cd -
 
 cd src/l4/pkg/malloc_test
@@ -52,8 +49,7 @@ echo '--------------------------------------------------------'
 info $PWD
 echo -e $bldylw
 ./make.sh
-echo -e $txtrst
-echo -e '--------------------------------------------------------\n\n'
+echo -e $txtrst'--------------------------------------------------------\n\n'
 cd -
 
 cd obj/l4/x86/

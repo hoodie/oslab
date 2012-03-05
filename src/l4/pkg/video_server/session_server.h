@@ -1,4 +1,5 @@
 #include <l4/re/util/meta>
+#include "video_server.h"
 
 
 class SessionServer : public L4::Server_object
@@ -32,10 +33,10 @@ class SessionServer : public L4::Server_object
             ios >> op;
             if (op != 42) return -L4_EINVAL;
 
-            /* creating my hello server*/
-            HelloServer *helloServer = new HelloServer(++session_id);
-            server.registry()->register_obj(helloServer);
-            ios << helloServer->obj_cap();
+            /* creating my video server*/
+            VideoServer *videoServer = new VideoServer(++session_id);
+            server.registry()->register_obj(videoServer);
+            ios << videoServer->obj_cap();
 
             printf("\n\e[0m\n");
             return L4_EOK;

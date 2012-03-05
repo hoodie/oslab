@@ -18,7 +18,7 @@
 #include <l4/cxx/ipc_stream>
 #include <string.h>
 #include <stdio.h>
-#include "shared.h"
+#include "protocol.h"
 
 int hello_call(L4::Cap<void> const &server, const char *message)
 {

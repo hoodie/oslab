@@ -18,8 +18,8 @@
 #include <l4/cxx/ipc_server>
 /*}*/
 
-#include "shared.h"
-#include "hello_server.h"
+#include "protocol.h"
+#include "video_server.h"
 #include "session_server.h"
 
 int main()
