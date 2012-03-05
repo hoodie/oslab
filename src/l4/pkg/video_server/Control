@@ -1,0 +1,2 @@
+requires: stdlibs libc_be_mem
+Maintainer: hendrik.sollich@mailbox.tu-dresden.de

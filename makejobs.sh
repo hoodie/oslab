@@ -29,6 +29,15 @@ echo -e $txtrst
 echo -e '--------------------------------------------------------\n\n'
 cd -
 
+cd src/l4/pkg/video_server/
+echo '--------------------------------------------------------'
+info "Video Server($PWD)"
+echo -e $bldcyn
+./make.sh
+echo -e $txtrst
+echo -e '--------------------------------------------------------\n\n'
+cd -
+
 cd src/l4/pkg/hello_server/
 echo '--------------------------------------------------------'
 info $PWD
