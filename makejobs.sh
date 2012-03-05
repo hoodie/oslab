@@ -59,7 +59,7 @@ read -p "want to run? [Y|n] : " confirmation
 
   case "$confirmation" in
     Yes|yes|Y|y|"")
-      make qemu
+      make qemu E=video_hendrik
       ;;
     No|no|N|n)
       warn canceled

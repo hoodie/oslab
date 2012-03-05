@@ -28,7 +28,7 @@ int main()
   SessionServer *sserver = new SessionServer(); 
   L4Re::Util::Registry_server<> server = sserver->get_server();
 
-  if (!server.registry()->register_obj(sserver, "hello_server").is_valid())
+  if (!server.registry()->register_obj(sserver, "video_server").is_valid())
   {
     printf("Could not register my service, readonly namespace?\n");
     return 1;

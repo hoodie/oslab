@@ -8,15 +8,16 @@
 #include <l4/libgfxbitmap/font.h>
 #include <l4/cxx/ipc_server>
 
-
-/** Video Server*/
 class VideoServer : public L4::Server_object
 {
   unsigned session_id; 
   private:
     L4Re::Util::Video::Goos_fb* fb;
+    void* buffer;
   public:
     VideoServer(unsigned sessid);
+    void draw();
     int dispatch( l4_umword_t, L4::Ipc::Iostream&  );
 };
+
 #endif

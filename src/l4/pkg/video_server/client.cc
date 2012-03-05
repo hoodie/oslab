@@ -36,18 +36,34 @@ int hello_call(L4::Cap<void> const &server, const char *message)
   return 0;
 }
 
+int server_call(L4::Cap<void> const &server, Opcode::Opcode command, const char *params = "")
+{
+  L4::Ipc::Iostream stream(l4_utcb());
+
+  unsigned long size = strlen(params);
+
+  stream << command;
+  stream << L4::Ipc::Buf_cp_out<const char>(params, size);
+  printf("%d - %s!!\n", command, params);
+
+  l4_msgtag_t res = stream.call(server.cap());
+  if (l4_ipc_error(res, l4_utcb())) {
+    return 1;
+  }
+  return 0;
+}
 
 int main()
 {
 
   // query IPC-Gate at name service > capability
-  L4::Cap<void> server = L4Re::Env::env()->get_cap<void>("hello_server");
+  L4::Cap<void> server = L4Re::Env::env()->get_cap<void>("video_server");
 
   if (!server.is_valid()) {
     printf("Could not get server capability!\n");
     return 1;
   }
-  if (hello_call(server, "ping_pong")) {
+  if (server_call(server, Opcode::draw, "0")) {
     printf("Server does not respond correctly\n");
     return 1;
   }

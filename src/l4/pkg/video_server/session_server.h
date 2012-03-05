@@ -32,6 +32,7 @@ class SessionServer : public L4::Server_object
             unsigned op;
             ios >> op;
             if (op != 42) return -L4_EINVAL;
+            printf("-----------------\n");
 
             /* creating my video server*/
             VideoServer *videoServer = new VideoServer(++session_id);
