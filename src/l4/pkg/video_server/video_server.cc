@@ -14,10 +14,6 @@ VideoServer::VideoServer(unsigned sessid) : session_id(sessid)
 void VideoServer::draw()
 {
   L4Re::Video::View::Info info;
-  if(!r){
-      
-  }
-  
 }
 
 int VideoServer::dispatch( l4_umword_t, L4::Ipc::Iostream &ios )
