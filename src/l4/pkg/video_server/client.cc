@@ -63,7 +63,7 @@ int main()
     printf("Could not get server capability!\n");
     return 1;
   }
-  if (server_call(server, Opcode::draw, "0")) {
+  if (server_call(server, Opcode::info, "0")) {
     printf("Server does not respond correctly\n");
     return 1;
   }

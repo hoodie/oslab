@@ -13,10 +13,16 @@ class VideoServer : public L4::Server_object
   unsigned session_id; 
   private:
     L4Re::Util::Video::Goos_fb* fb;
+    L4Re::Video::View::Info info;
+    int r;
+    int bpl;
+    int bpp;
     void* buffer;
   public:
     VideoServer(unsigned sessid);
-    void draw();
+    void get_info();
+    void *get_pixel(int x, int y);
+    //int set_pixel(int x, int y, hh);
     int dispatch( l4_umword_t, L4::Ipc::Iostream&  );
 };
 

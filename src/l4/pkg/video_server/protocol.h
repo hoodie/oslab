@@ -13,7 +13,8 @@
 namespace Opcode{
   enum Opcode {
     hello,
-    draw
+    draw,
+    info
   };
 };
 

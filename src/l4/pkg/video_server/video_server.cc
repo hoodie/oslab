@@ -11,9 +11,23 @@ VideoServer::VideoServer(unsigned sessid) : session_id(sessid)
   printf ("Video Server Session %i Initiated\n",sessid);
 }
 
-void VideoServer::draw()
+void VideoServer::get_info()
 {
   L4Re::Video::View::Info info;
+  int r = fb->view_info(&info);
+  if(!r){
+     printf("so there is a frame buffer after all\n"); 
+     // printf("info: bytes_per_pixel %u\n", info.pixel_info.bytes_per_pixel); 
+     printf("info: width %u \n", info.width); 
+     printf("info: height %u \n", info.height); 
+  }
+}
+
+void *VideoServer::get_pixel(int x, int y){
+  void *addr =(void*) ((char*) buffer
+  + ( y * info.bytes_per_line )
+  + ( x * info.pixel_info.bytes_per_pixel()) );
+  return addr;
 }
 
 int VideoServer::dispatch( l4_umword_t, L4::Ipc::Iostream &ios )
@@ -29,9 +43,9 @@ int VideoServer::dispatch( l4_umword_t, L4::Ipc::Iostream &ios )
       printf("opcode hello\n");
       break;
 
-    case Opcode::draw: 
-      printf("opcode draw - now I'm getting creative\n");
-      this->draw();
+    case Opcode::info: 
+      printf("opcode info- lets see what we got\n");
+      this->get_info();
       break;
 
     default:
